@@ -3,7 +3,9 @@ package com.swenchao.wc;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.tuple.Tuple;
 import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
 /**
@@ -21,10 +23,16 @@ public class StreamWordCount {
         streamEnv.setParallelism(4);
 
         // 从文件中取数据
-        String inputPath = "src/main/resources/WordCount.txt";
-        DataStream<String> stringDataStream = streamEnv.readTextFile(inputPath);
+//        String inputPath = "src/main/resources/WordCount.txt";
+//        DataStream<String> stringDataStream = streamEnv.readTextFile(inputPath);
 
-        //
+        // 用parameter传参
+        ParameterTool parameterTool = ParameterTool.fromArgs(args);
+        String host = parameterTool.get("host");
+        int port = parameterTool.getInt("port");
+
+        // 从socket文本流读取数据
+        DataStream<String> stringDataStream = streamEnv.socketTextStream(host, port);
 
         // 转换计算
         DataStream<Tuple2<String, Integer>> resultStream =
