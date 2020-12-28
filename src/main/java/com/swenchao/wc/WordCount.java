@@ -3,9 +3,6 @@ package com.swenchao.wc;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
-import org.apache.flink.api.java.operators.AggregateOperator;
-import org.apache.flink.api.java.operators.DataSource;
-import org.apache.flink.api.java.tuple.Tuple;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.util.Collector;
 
@@ -30,7 +27,8 @@ public class WordCount {
         // 对数据集集进行处理，按空格分词，转换成(word,1)
         System.out.println(stringDataSource);
         // 按照第一个位置进行分组，第二个位置求和
-        DataSet<Tuple2<String, Integer>> res = stringDataSource.flatMap(new MyFlatMapper()).groupBy(0).sum(1);
+        DataSet<Tuple2<String, Integer>> res =
+                stringDataSource.flatMap(new MyFlatMapper()).groupBy(0).sum(1).setParallelism(2);
         res.print();
     }
 

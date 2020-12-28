@@ -36,7 +36,9 @@ public class StreamWordCount {
 
         // 转换计算
         DataStream<Tuple2<String, Integer>> resultStream =
-                stringDataStream.flatMap(new WordCount.MyFlatMapper()).keyBy(0).sum(1);
+                stringDataStream.flatMap(new WordCount.MyFlatMapper()).slotSharingGroup("green")
+                        .keyBy(0)
+                        .sum(1).setParallelism(2).slotSharingGroup("red");
 
         resultStream.print();
 
