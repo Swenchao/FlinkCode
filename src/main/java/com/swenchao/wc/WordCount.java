@@ -6,8 +6,6 @@ import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.util.Collector;
 
-import java.util.Arrays;
-
 /**
  * @Author: Swenchao
  * @Date: 2020/12/8 19:36
