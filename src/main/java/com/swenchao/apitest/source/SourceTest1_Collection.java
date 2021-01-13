@@ -7,6 +7,13 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * @Author: swenchao
+ * @Description: 从集合中取数据
+ * @Date 2021/1/12 11:15 下午
+ * @Version: 1.0
+ */
+
 public class SourceTest1_Collection {
     public static void main(String[] args) throws Exception {
         // 创建执行环境
