@@ -1,6 +1,7 @@
 package com.swenchao.apitest.transform;
 
 import com.swenchao.apitest.beans.SensorReading;
+import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.functions.ReduceFunction;
 import org.apache.flink.api.java.tuple.Tuple;
 import org.apache.flink.streaming.api.datastream.DataStream;
