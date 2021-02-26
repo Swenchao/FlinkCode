@@ -1,5 +1,11 @@
 package com.swenchao.apitest.transform;
 
+/**
+ * Author: bytedance
+ * Description:
+ * Date 2021/2/20 5:47 下午
+ * Version: 1.0
+ */
 import com.swenchao.apitest.beans.SensorReading;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.functions.ReduceFunction;
