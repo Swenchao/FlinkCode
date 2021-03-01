@@ -38,3 +38,6 @@ Flink学习实践demo
 
 [Reduce使用](https://github.com/Swenchao/FlinkCode/blob/main/src/main/java/com/swenchao/apitest/transform/TransformTest4_MultipleStreams.java)
 
+### 富函数
+
+[富函数使用](https://github.com/Swenchao/FlinkCode/blob/main/src/main/java/com/swenchao/apitest/transform/TransformTest5_RichFunction.java)
