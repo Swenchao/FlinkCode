@@ -34,9 +34,13 @@ Flink学习实践demo
 
 [Reduce使用](https://github.com/Swenchao/FlinkCode/blob/main/src/main/java/com/swenchao/apitest/transform/TransformTest3_Reduce.java)
 
-### 多流转换操作
+### 多流转换操作（拆分操作）
 
-[Reduce使用](https://github.com/Swenchao/FlinkCode/blob/main/src/main/java/com/swenchao/apitest/transform/TransformTest4_MultipleStreams.java)
+[Split、Select使用](https://github.com/Swenchao/FlinkCode/blob/main/src/main/java/com/swenchao/apitest/transform/TransformTest4_MultipleStreams.java)
+
+### 多流转换操作（两流合并）
+
+[Connect、CoMap使用](https://github.com/Swenchao/FlinkCode/blob/main/src/main/java/com/swenchao/apitest/transform/TransformTest4_MultipleStreams_Connect.java)
 
 ### 富函数
 
