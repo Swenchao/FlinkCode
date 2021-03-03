@@ -45,3 +45,7 @@ Flink学习实践demo
 ### 富函数
 
 [富函数使用](https://github.com/Swenchao/FlinkCode/blob/main/src/main/java/com/swenchao/apitest/transform/TransformTest5_RichFunction.java)
+
+### 重分区
+
+[shuffle\keyby使用](https://github.com/Swenchao/FlinkCode/blob/main/src/main/java/com/swenchao/apitest/transform/TransformTest6_Partitiom.java)
