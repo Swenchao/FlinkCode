@@ -48,4 +48,4 @@ Flink学习实践demo
 
 ### 重分区
 
-[shuffle\keyby使用](https://github.com/Swenchao/FlinkCode/blob/main/src/main/java/com/swenchao/apitest/transform/TransformTest6_Partitiom.java)
+[shuffle | keyby使用](https://github.com/Swenchao/FlinkCode/blob/main/src/main/java/com/swenchao/apitest/transform/TransformTest6_Partitiom.java)
