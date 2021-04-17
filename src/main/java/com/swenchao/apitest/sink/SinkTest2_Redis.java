@@ -14,7 +14,7 @@ import org.apache.flink.streaming.connectors.redis.common.mapper.RedisMapper;
 
 /**
  * @author: Swenchao
- * @description: sink到redis
+ * @description: sink到redis（若一个传感器有多条数据，则只保留最后一条数据）
  * @create: 2021-03-31 15:22
  **/
 public class SinkTest2_Redis {
@@ -51,22 +51,24 @@ public class SinkTest2_Redis {
      * Version: 1.0
      */
     public static class MyRedisMapper implements RedisMapper<SensorReading> {
-
-        // 定义保存数据到redis的命令，存成Hash表 hset sensor_temp id temperature
+        // 定义保存数据到redis的命令，存成Hash表 redis命令：hset sensor_temp id temperature
+        // hset sensor_temp id temperature  redis命令：sensor_temp表名；id：key值；temperature：value（温度值）
         @Override
         public RedisCommandDescription getCommandDescription() {
-            // RedisCommand枚举值，列举redis命令
+            // RedisCommand枚举值，列举redis命令；sensor_temp表名
             return new RedisCommandDescription(RedisCommand.HSET, "sensor_temp");
         }
 
         @Override
         public String getKeyFromData(SensorReading sensorReading) {
-            return null;
+            // 获得key值
+            return sensorReading.getId();
         }
 
         @Override
         public String getValueFromData(SensorReading sensorReading) {
-            return null;
+            // 获得value值
+            return String.valueOf(sensorReading.getTemperature());
         }
     }
 }
