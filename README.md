@@ -55,3 +55,7 @@ Flink学习实践demo
 ### Kafka
 
 [Kafka使用](https://github.com/Swenchao/FlinkCode/blob/main/src/main/java/com/swenchao/apitest/sink/SinkTest1_Kafka.java)
+
+### Redis
+
+[Redis使用](https://github.com/Swenchao/FlinkCode/blob/main/src/main/java/com/swenchao/apitest/sink/SinkTest2_Redis.java)
