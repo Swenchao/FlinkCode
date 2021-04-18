@@ -59,3 +59,11 @@ Flink学习实践demo
 ### Redis
 
 [Redis使用](https://github.com/Swenchao/FlinkCode/blob/main/src/main/java/com/swenchao/apitest/sink/SinkTest2_Redis.java)
+
+### Es
+
+[Es使用](https://github.com/Swenchao/FlinkCode/blob/main/src/main/java/com/swenchao/apitest/sink/SinkTest3_ElasticSearch.java)
+
+### Jdbc
+
+[Jdbc使用](https://github.com/Swenchao/FlinkCode/blob/main/src/main/java/com/swenchao/apitest/sink/SinkTest4_Jdbc.java)
