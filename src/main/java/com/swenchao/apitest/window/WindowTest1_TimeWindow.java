@@ -1,27 +1,33 @@
 package com.swenchao.apitest.window;
 
 import com.swenchao.apitest.beans.SensorReading;
+import org.apache.commons.collections.IteratorUtils;
+import org.apache.flink.api.common.functions.AggregateFunction;
 import org.apache.flink.api.common.functions.MapFunction;
+import org.apache.flink.api.java.tuple.Tuple;
+import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.api.windowing.assigners.EventTimeSessionWindows;
-import org.apache.flink.streaming.api.windowing.assigners.TumblingProcessingTimeWindows;
+import org.apache.flink.streaming.api.functions.windowing.WindowFunction;
 import org.apache.flink.streaming.api.windowing.time.Time;
+import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
+import org.apache.flink.util.Collector;
 
 /**
  * Author: swenchao
- * Description: TimeWindow使用
+ * Description: 时间窗口使用
  * Date 2021/4/18 9:02 下午
  * Version: 1.0
  */
 public class WindowTest1_TimeWindow {
     public static void main(String[] args) throws Exception {
-        StreamExecutionEnvironment env = new StreamExecutionEnvironment();
+        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setParallelism(1);
 
-        // 从文件读取数据
-        DataStreamSource<String> sensorDataStreamSource = env.readTextFile("src/main/resources/sensor.txt");
+        // socket文本流
+        DataStreamSource<String> sensorDataStreamSource = env.socketTextStream("localhost", 7777);
+
         // 转换成 SensorReading 类型
         SingleOutputStreamOperator<SensorReading> mapStream = sensorDataStreamSource.map(new MapFunction<String, SensorReading>() {
             @Override
@@ -31,23 +37,60 @@ public class WindowTest1_TimeWindow {
             }
         });
 
-        // 窗口测试
-        // 基于dataStream可以调windowAll方法
-        // Note: This operation is inherently non-parallel since all elements have to pass through
-        //	 * the same operator instance.  （源码注解：因为所有元素都被传递到下游相同的算子中，所以本质上是非并行的）
-//         mapStream.windowAll();
-        // 开窗口前要先进行keyBy
-        mapStream.keyBy("id")
-                // 时间窗口
-//                .window(TumblingProcessingTimeWindows.of(Time.seconds(15)))
-                // 根据传参，判断开的是什么窗口（滚动 滑动）
-//                .timeWindow(Time.seconds(15))
-//                .timeWindow(Time.seconds(15), Time.seconds(5))
-                // 会话窗口（1分钟间隔）
-//                .window(EventTimeSessionWindows.withGap(Time.minutes(1)))
-                // 计数窗口
-                // 窗口大小 滑动不长
-                .countWindow(10, 2);
+        // 增量聚合函数
+        SingleOutputStreamOperator<Integer> resultStream = mapStream.keyBy("id")
+                .timeWindow(Time.seconds(15))
+                // 第一个Integer为累加器类型，第二个为输出
+                .aggregate(new AggregateFunction<SensorReading, Integer, Integer>() {
+                    @Override
+                    // 创建累加器
+                    public Integer createAccumulator() {
+                        // 初始值为 0
+                        return 0;
+                    }
+
+                    @Override
+                    // sensorReading：传过来的传感器数据   accumulator：累加器
+                    public Integer add(SensorReading sensorReading, Integer accumulator) {
+                        // 来一条数据就加1
+                        return accumulator + 1;
+                    }
+
+                    @Override
+                    // 返回结果
+                    public Integer getResult(Integer accumulator) {
+                        return accumulator;
+                    }
+
+                    @Override
+                    // 一般用于会话窗口中（合并分区）
+                    public Integer merge(Integer a, Integer b) {
+                        return a + b;
+                    }
+                });
+
+//        resultStream.print();
+
+        // 全窗口函数
+        SingleOutputStreamOperator<Tuple3<String, Long, Integer>> resultStream2 = mapStream.keyBy("id")
+                .timeWindow(Time.seconds(15))
+                /*
+                 * @param <IN> The type of the input value.
+                 * @param <OUT> The type of the output value.
+                 * @param <KEY> The type of the key.
+                 * @param <W> The type of {@code Window} that this window function can be applied on.
+                 */
+                .apply(new WindowFunction<SensorReading, Tuple3<String, Long, Integer>, Tuple, TimeWindow>() {
+                    @Override
+                    public void apply(Tuple tuple, TimeWindow window, Iterable<SensorReading> input, Collector<Tuple3<String, Long, Integer>> out) throws Exception {
+                        String id = tuple.getField(0);
+                        Long timeEnd  = window.getEnd();
+                        int count = IteratorUtils.toList(input.iterator()).size();
+                        out.collect(new Tuple3<>(id, timeEnd, count));
+                    }
+                });
+
+        resultStream2.print();
 
         env.execute();
     }
