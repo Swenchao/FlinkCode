@@ -5,6 +5,7 @@ import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.windowing.assigners.EventTimeSessionWindows;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingProcessingTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
 
@@ -41,7 +42,12 @@ public class WindowTest1_TimeWindow {
 //                .window(TumblingProcessingTimeWindows.of(Time.seconds(15)))
                 // 根据传参，判断开的是什么窗口（滚动 滑动）
 //                .timeWindow(Time.seconds(15))
-                .timeWindow(Time.seconds(15), Time.seconds(5));
+//                .timeWindow(Time.seconds(15), Time.seconds(5))
+                // 会话窗口（1分钟间隔）
+//                .window(EventTimeSessionWindows.withGap(Time.minutes(1)))
+                // 计数窗口
+                // 窗口大小 滑动不长
+                .countWindow(10, 2);
 
         env.execute();
     }
