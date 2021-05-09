@@ -7,8 +7,8 @@ import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-
-import java.util.concurrent.TimeUnit;
+import org.apache.flink.streaming.api.windowing.time.Time;
+import org.apache.flink.util.OutputTag;
 
 /**
  * Author: swenchao
@@ -20,7 +20,6 @@ public class WindowTest2_CountWindow {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setParallelism(1);
-
 
         // socket文本流
         DataStreamSource<String> sensorDataStreamSource = env.socketTextStream("localhost", 7777);
@@ -35,10 +34,13 @@ public class WindowTest2_CountWindow {
         });
 
         // 开计数窗口测试（）
-//        sensorDataStreamSource.keyBy("id")
-                // 10个数一个窗口，隔两个数开一个窗口
-//                .countWindow(10, 2)
-//                .aggregate()
+        SingleOutputStreamOperator<Double> avgRes = mapStream.keyBy("id")
+//                 10个数一个窗口，隔两个数滑动一次
+                // 在到达不足8个数时，也会输出（第一次输出前2个数平均数 再就是4个 再是6个...）
+                .countWindow(10, 2)
+                .aggregate(new MyAvgTemp());
+
+        avgRes.print();
 
         env.execute();
     }
@@ -57,7 +59,7 @@ public class WindowTest2_CountWindow {
 
         @Override
         public Double getResult(Tuple2<Double, Integer> accu) {
-            return accu.f0 / accu.f1 * 1.0;
+            return accu.f0 / accu.f1;
         }
 
         @Override
@@ -65,4 +67,5 @@ public class WindowTest2_CountWindow {
             return new Tuple2<>(a.f0 + b.f0, a.f1 + b.f1);
         }
     }
+    
 }
