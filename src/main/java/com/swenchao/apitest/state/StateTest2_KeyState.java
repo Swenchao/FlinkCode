@@ -5,10 +5,7 @@ import com.swenchao.apitest.beans.SensorReading;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.functions.RichFunction;
 import org.apache.flink.api.common.functions.RichMapFunction;
-import org.apache.flink.api.common.state.ListState;
-import org.apache.flink.api.common.state.ListStateDescriptor;
-import org.apache.flink.api.common.state.ValueState;
-import org.apache.flink.api.common.state.ValueStateDescriptor;
+import org.apache.flink.api.common.state.*;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
@@ -54,6 +51,7 @@ public class StateTest2_KeyState {
 
         // 其他类型状态声明
         private ListState<String> myListState;
+        private MapState<String, Double> myMapState;
 
         @Override
         public void open(Configuration parameters) throws Exception {
@@ -62,6 +60,9 @@ public class StateTest2_KeyState {
 
             // 其他类型状态声明（注意多个state，名称不可重复）
             myListState = getRuntimeContext().getListState(new ListStateDescriptor<String>("my-list", String.class));
+            myMapState = getRuntimeContext().getMapState(new MapStateDescriptor<String, Double>("my-map",
+                    String.class, Double.class));
+
         }
 
         @Override
@@ -72,10 +73,17 @@ public class StateTest2_KeyState {
             }
             ++count;
             keyCountState.update(count);
-            return count;
+//            return count;
 
-            // 其他状态API调用（du）
-//          Iterable<String> strings = myListState.get();
+            // 其他状态API调用（读）
+            for (String str : myListState.get()) {
+                System.out.println(str);
+            }
+//            Iterable<String> strings = myListState.get();
+            // 写
+            myListState.add("hello");
+
+          return count;
         }
     }
 }
